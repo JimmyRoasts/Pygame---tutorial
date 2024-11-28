@@ -3,6 +3,8 @@ import sys
 from os import path
 from settings import *
 from sprites import *
+from tilemap import Map
+from tilemap import Camera
 
 class Game:
     def __init__(self):
@@ -15,10 +17,7 @@ class Game:
 
     def load_data(self):
         game_folder = path.dirname(__file__)
-        self.map_data = []
-        with open(path.join(game_folder, 'maps', 'map.txt'), 'r') as f:
-            for line in f:
-                self.map_data.append(line)
+        self.map = Map(path.join(game_folder, 'maps', 'map_3.txt'))
 
     
     def new(self):
@@ -26,7 +25,7 @@ class Game:
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
         self.player = None
-        for row, tiles in enumerate(self.map_data):
+        for row, tiles in enumerate(self.map.data):
             for col, tile in enumerate(tiles):
                 if tile == '1':
                     Wall(self, col, row)
@@ -35,6 +34,7 @@ class Game:
                 else:
                     # do nothing
                     pass
+        self.camera = Camera(self.map.width, self.map.height)
 
     def run(self):
         # game loop - set self.playing = False to end the game
@@ -52,6 +52,7 @@ class Game:
     def update(self):
          # update portion of the game loop
          self.all_sprites.update()
+         self.camera.update(self.player)    
 
     def draw_grid(self):
         for x in range(0, WIDTH , TILESIZE):
@@ -63,7 +64,8 @@ class Game:
     def draw(self):
         self.screen.fill(BGCOLOR)
         self.draw_grid()
-        self.all_sprites.draw(self.screen)
+        for sprite in self.all_sprites:
+            self.screen.blit(sprite.image, self.camera.apply(sprite))
         pg.display.flip()
     
     def events(self):

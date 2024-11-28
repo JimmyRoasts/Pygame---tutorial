@@ -28,8 +28,6 @@ class Player(pg.sprite.Sprite):
             self.vx *= 0.7071 #square root of 2
             self.vy *= 0.7071
 
-
-
     def move(self, dx=0, dy=0):
         if not self.collide_with_walls(dx, dy):
             self.x += dx
@@ -64,7 +62,6 @@ class Player(pg.sprite.Sprite):
         self.collide_with_walls('x')
         self.rect.y = self.y
         self.collide_with_walls('y')
-
 
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, x, y):
